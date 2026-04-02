@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GLEAMI 3.0 배송 정책 변경 가이드</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: #0a0a0a;
+    color: #e4e4e7;
+    min-height: 100vh;
+    padding: 40px 20px;
+  }
+  .container { max-width: 780px; margin: 0 auto; }
+
+  /* Header */
+  .header {
+    text-align: center;
+    margin-bottom: 48px;
+  }
+  .header h1 {
+    font-size: 32px;
+    font-weight: 700;
+    background: linear-gradient(135deg, #D4A843, #C4963C, #E8C96A);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 8px;
+  }
+  .header .subtitle {
+    color: #a1a1aa;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+  .header .date-badge {
+    display: inline-block;
+    margin-top: 12px;
+    padding: 4px 14px;
+    background: rgba(212,168,67,0.15);
+    border: 1px solid rgba(212,168,67,0.3);
+    border-radius: 20px;
+    font-size: 13px;
+    color: #D4A843;
+  }
+
+  /* Section Title */
+  .section-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: #fafafa;
+    margin: 40px 0 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .section-title .icon {
+    width: 32px; height: 32px;
+    background: linear-gradient(135deg, #D4A843, #C4963C);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+
+  /* Comparison Card */
+  .compare-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+  .compare-card {
+    background: #18181b;
+    border: 1px solid #27272a;
+    border-radius: 16px;
+    padding: 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  .compare-card.old {
+    border-color: #3f3f46;
+  }
+  .compare-card.new {
+    border-color: rgba(212,168,67,0.4);
+    box-shadow: 0 0 20px rgba(212,168,67,0.08);
+  }
+  .compare-card .label {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    margin-bottom: 16px;
+  }
+  .compare-card.old .label {
+    background: #27272a;
+    color: #a1a1aa;
+  }
+  .compare-card.new .label {
+    background: rgba(212,168,67,0.2);
+    color: #E8C96A;
+  }
+  .compare-card h3 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #fafafa;
+    margin-bottom: 14px;
+  }
+  .compare-card ul {
+    list-style: none;
+    font-size: 14px;
+    line-height: 1.8;
+    color: #a1a1aa;
+  }
+  .compare-card ul li::before {
+    content: '•';
+    margin-right: 8px;
+    color: #52525b;
+  }
+  .compare-card.new ul li::before {
+    color: #D4A843;
+  }
+  .compare-card .highlight {
+    color: #E8C96A;
+    font-weight: 500;
+  }
+  .compare-card .strikethrough {
+    text-decoration: line-through;
+    color: #52525b;
+  }
+
+  /* Info Table */
+  .info-table {
+    width: 100%;
+    background: #18181b;
+    border: 1px solid #27272a;
+    border-radius: 16px;
+    overflow: hidden;
+    margin-bottom: 32px;
+  }
+  .info-table table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+  }
+  .info-table th {
+    background: #1c1c1f;
+    padding: 12px 16px;
+    text-align: left;
+    font-weight: 600;
+    color: #d4d4d8;
+    border-bottom: 1px solid #27272a;
+  }
+  .info-table td {
+    padding: 12px 16px;
+    border-bottom: 1px solid #1f1f23;
+    color: #a1a1aa;
+  }
+  .info-table tr:last-child td { border-bottom: none; }
+  .info-table .badge-free {
+    display: inline-block;
+    padding: 2px 8px;
+    background: rgba(34,197,94,0.15);
+    color: #4ade80;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .info-table .badge-paid {
+    display: inline-block;
+    padding: 2px 8px;
+    background: rgba(239,68,68,0.15);
+    color: #f87171;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .info-table .badge-change {
+    display: inline-block;
+    padding: 2px 8px;
+    background: rgba(212,168,67,0.15);
+    color: #E8C96A;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  /* Step Card */
+  .step-card {
+    background: #18181b;
+    border: 1px solid #27272a;
+    border-radius: 16px;
+    padding: 28px;
+    margin-bottom: 20px;
+    position: relative;
+  }
+  .step-card .step-number {
+    width: 36px; height: 36px;
+    background: linear-gradient(135deg, #D4A843, #C4963C);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; font-weight: 700;
+    color: #0a0a0a;
+    margin-bottom: 16px;
+  }
+  .step-card h3 {
+    font-size: 17px;
+    font-weight: 600;
+    color: #fafafa;
+    margin-bottom: 8px;
+  }
+  .step-card .desc {
+    font-size: 14px;
+    color: #a1a1aa;
+    line-height: 1.7;
+    margin-bottom: 16px;
+  }
+  .step-card .image-placeholder {
+    background: #111113;
+    border: 1px solid #27272a;
+    border-radius: 12px;
+    padding: 16px;
+    text-align: center;
+  }
+  .step-card .image-placeholder img {
+    max-width: 100%;
+    border-radius: 8px;
+    border: 1px solid #27272a;
+  }
+  .step-card .tip {
+    margin-top: 14px;
+    padding: 12px 16px;
+    background: rgba(212,168,67,0.08);
+    border: 1px solid rgba(212,168,67,0.2);
+    border-radius: 10px;
+    font-size: 13px;
+    color: #E8C96A;
+    line-height: 1.6;
+  }
+  .step-card .tip::before {
+    content: '💡 ';
+  }
+  .step-card .warning {
+    margin-top: 14px;
+    padding: 12px 16px;
+    background: rgba(239,68,68,0.08);
+    border: 1px solid rgba(239,68,68,0.2);
+    border-radius: 10px;
+    font-size: 13px;
+    color: #f87171;
+    line-height: 1.6;
+  }
+  .step-card .warning::before {
+    content: '⚠️ ';
+  }
+
+  /* Callout */
+  .callout {
+    background: linear-gradient(135deg, rgba(212,168,67,0.12), rgba(196,150,60,0.06));
+    border: 1px solid rgba(212,168,67,0.3);
+    border-radius: 16px;
+    padding: 24px;
+    margin: 32px 0;
+  }
+  .callout h3 {
+    font-size: 16px;
+    font-weight: 700;
+    color: #E8C96A;
+    margin-bottom: 10px;
+  }
+  .callout p {
+    font-size: 14px;
+    color: #d4d4d8;
+    line-height: 1.7;
+  }
+
+  /* Divider */
+  .divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #27272a, transparent);
+    margin: 40px 0;
+  }
+
+  /* Footer */
+  .footer {
+    text-align: center;
+    padding: 32px 0 16px;
+    color: #52525b;
+    font-size: 13px;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- Header -->
+  <div class="header">
+    <h1>GLEAMI 3.0 배송 정책 변경 가이드</h1>
+    <div class="subtitle">
+      종로 운영팀을 위한 배송 정책 비교 및 카페24 운영 가이드
+    </div>
+    <div class="date-badge">Updated 2026.04.01</div>
+  </div>
+
+  <!-- Section 1: Policy Comparison -->
+  <div class="section-title">
+    <div class="icon">📦</div>
+    배송 정책 비교 — GLEAMI 2.0 vs 3.0
+  </div>
+
+  <div class="compare-grid">
+    <div class="compare-card old">
+      <div class="label">GLEAMI 2.0 (기존)</div>
+      <h3>구매 금액별 차등 배송비</h3>
+      <ul>
+        <li>50만원 이하 : 4,000원</li>
+        <li>50만원 초과~100만원 : 7,000원</li>
+        <li>100만원 초과~199만원 : 10,000원</li>
+        <li>199만원 초과~300만원 : 13,000원</li>
+        <li class="strikethrough">공동구매 합배송 불가</li>
+        <li class="strikethrough">주문 건당 배송비 중복 과금</li>
+      </ul>
+    </div>
+    <div class="compare-card new">
+      <div class="label">GLEAMI 3.0 (변경)</div>
+      <h3>조건부 무료배송</h3>
+      <ul>
+        <li><span class="highlight">10만원 이상 : 무료배송</span></li>
+        <li><span class="highlight">10만원 미만 : 4,000원</span></li>
+        <li>주얼리/순금/공동구매 동일 적용</li>
+        <li>배송비는 판매가에 내재화 운영</li>
+        <li><span class="highlight">공동구매+주얼리 묶음배송 → 분리발송</span></li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Detailed Table -->
+  <div class="info-table">
+    <table>
+      <tr>
+        <th style="width:30%">항목</th>
+        <th style="width:35%">2.0 (기존)</th>
+        <th style="width:35%">3.0 (변경)</th>
+      </tr>
+      <tr>
+        <td><strong>배송비 기준</strong></td>
+        <td>구매 금액별 4단계 차등<br><span class="badge-paid">4,000~13,000원</span></td>
+        <td>10만원 기준 2단계<br><span class="badge-free">무료</span> / <span class="badge-paid">4,000원</span></td>
+      </tr>
+      <tr>
+        <td><strong>카페24 세팅</strong></td>
+        <td>배송비 - 구매금액별 차등</td>
+        <td><span class="badge-change">배송비 조건부 무료</span></td>
+      </tr>
+      <tr>
+        <td><strong>배송 업체</strong></td>
+        <td>CJ 프리미엄 퍼팩트택배</td>
+        <td>CJ 프리미엄 퍼팩트택배 (동일)</td>
+      </tr>
+      <tr>
+        <td><strong>배송 방법</strong></td>
+        <td>택배 / 전국</td>
+        <td>택배 / 전국 (동일)</td>
+      </tr>
+      <tr>
+        <td><strong>공동구매+주얼리<br>복합 주문</strong></td>
+        <td>합배송 불가<br>→ 건당 배송비 중복 과금 이슈</td>
+        <td><span class="badge-change">묶음배송 → 상품 유형별 분리 발송</span><br>송장 2개 개별 할당</td>
+      </tr>
+      <tr>
+        <td><strong>고객 안내 메시지</strong></td>
+        <td>구매금액별 배송료 안내</td>
+        <td>"10만원 이상 무료배송"</td>
+      </tr>
+    </table>
+  </div>
+
+  <div class="callout">
+    <h3>왜 변경했나요?</h3>
+    <p>
+      결제 페이지 개발 중 주문 건당 배송비 중복 과금 + 주문서 개별 발행 이슈가 발생했습니다.
+      카페24 시스템 한계로 합배송 설정이 불가하여, 조건부 무료배송으로 전환하고
+      배송비를 판매가에 내재화하는 방향으로 결정했습니다.
+    </p>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- Section 2: Cafe24 Guide -->
+  <div class="section-title">
+    <div class="icon">🛒</div>
+    카페24 묶음배송 분리 발송 가이드
+  </div>
+
+  <p style="font-size:14px; color:#a1a1aa; margin-bottom:24px; line-height:1.7;">
+    공동구매 상품과 주얼리를 함께 구매한 복합 주문이 들어왔을 때,<br>
+    카페24 배송 준비중 관리에서 <strong style="color:#E8C96A;">공동구매 상품 / 주얼리(24K/투자용 포함) 상품을 분리하여 각각 송장을 할당</strong>하는 방법입니다.
+  </p>
+
+  <!-- Step 1 -->
+  <div class="step-card">
+    <div class="step-number">1</div>
+    <h3>복합 주문 확인</h3>
+    <div class="desc">
+      <strong>배송 준비중 관리</strong> 페이지에서 공동구매와 주얼리가 함께 포함된 주문을 확인합니다.<br>
+      아래 예시처럼 하나의 주문번호에 공동구매 상품과 주얼리 상품이 함께 들어와 있습니다.
+    </div>
+    <div class="image-placeholder">
+      <img src="images/step-01.jpg" alt="Step 1: 복합 주문 확인">
+    </div>
+    <div class="tip">
+      상품명을 확인하세요. <strong>공동구매 상품</strong>과 <strong>주얼리/24K/투자용 상품</strong>이 한 주문에 섞여 있으면 분리 발송 대상입니다.
+    </div>
+  </div>
+
+  <!-- Step 2 -->
+  <div class="step-card">
+    <div class="step-number">2</div>
+    <h3>공동구매 주문 선택 → 묶음선택 → 송장번호 발급</h3>
+    <div class="desc">
+      같은 주문 내에서 <strong>공동구매 상품만 체크박스로 선택</strong>한 뒤,<br>
+      <strong>묶음선택</strong> 체크 후 <strong>"송장번호저장"</strong> 버튼을 클릭하여 송장번호를 발급받습니다.
+    </div>
+    <div class="image-placeholder">
+      <img src="images/step-02.jpg" alt="Step 2: 공동구매 송장 발급">
+    </div>
+    <div class="tip">
+      반드시 <strong>공동구매 상품끼리만</strong> 선택하세요. 주얼리/24K/투자용 상품과 섞어서 선택하면 안 됩니다.
+    </div>
+  </div>
+
+  <!-- Step 3 -->
+  <div class="step-card">
+    <div class="step-number">3</div>
+    <h3>공동구매 송장번호 할당 확인</h3>
+    <div class="desc">
+      공동구매 상품에 송장번호가 정상적으로 할당된 것을 확인합니다.<br>
+      운송장정보 컬럼에 CJ대한통운 송장번호가 표시됩니다.
+    </div>
+    <div class="image-placeholder">
+      <img src="images/step-03.jpg" alt="Step 3: 공동구매 송장 확인">
+    </div>
+  </div>
+
+  <!-- Step 4 -->
+  <div class="step-card">
+    <div class="step-number">4</div>
+    <h3>주얼리 주문 선택 → 송장번호 발급</h3>
+    <div class="desc">
+      이번에는 <strong>주얼리 상품만 체크박스로 선택</strong>한 뒤,<br>
+      동일하게 <strong>"송장번호 다시 발급"</strong> 버튼을 클릭하여 별도 송장번호를 발급받습니다.
+    </div>
+    <div class="image-placeholder">
+      <img src="images/step-04.jpg" alt="Step 4: 주얼리 송장 발급">
+    </div>
+    <div class="warning">
+      공동구매에 이미 송장이 할당되어 있으므로, 주얼리는 <strong>"송장번호 다시 발급"</strong>으로 진행합니다.
+    </div>
+  </div>
+
+  <!-- Step 5 -->
+  <div class="step-card">
+    <div class="step-number">5</div>
+    <h3>주얼리 송장번호 할당 확인</h3>
+    <div class="desc">
+      주얼리 상품에도 별도의 송장번호가 정상적으로 할당된 것을 확인합니다.<br>
+      이제 하나의 주문에 <strong>2개의 서로 다른 송장번호</strong>가 할당된 상태입니다.
+    </div>
+    <div class="image-placeholder">
+      <img src="images/step-05.jpg" alt="Step 5: 주얼리 송장 확인">
+    </div>
+  </div>
+
+  <!-- Step 6 -->
+  <div class="step-card">
+    <div class="step-number">6</div>
+    <h3>분리 발송 완료 — 배송 대기 관리에서 최종 확인</h3>
+    <div class="desc">
+      <strong>배송 대기 관리</strong> 페이지로 이동하면, 1개의 주문이 <strong>2개의 배송건</strong>으로 분리되어 있는 것을 확인할 수 있습니다.<br>
+      각각 독립적인 송장번호로 발송 처리합니다.
+    </div>
+    <div class="image-placeholder">
+      <img src="images/step-06.jpg" alt="Step 6: 분리 발송 완료">
+    </div>
+    <div class="tip">
+      <strong>결과:</strong> 고객에게는 공동구매 택배 1개 + 주얼리 택배 1개, 총 2개의 택배가 각각 배송됩니다.<br>
+      배송비는 무료배송(10만원 이상)이므로 고객에게 추가 비용이 발생하지 않습니다.
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- Summary Callout -->
+  <div class="callout">
+    <h3>요약 체크리스트</h3>
+    <p>
+      ✅ 카페24 상품 배송비 세팅 → "조건부 무료" (10만원 이상 무료 / 미만 4,000원)<br>
+      ✅ 복합 주문(공동구매+주얼리) 발생 시 → 상품 유형별 분리하여 각각 송장 발급<br>
+      ✅ 고객 안내 메시지 → "10만원 이상 구매 시 무료배송"<br>
+      ✅ 배송 대기 관리에서 분리 발송 확인 후 출고
+    </p>
+  </div>
+
+  <div class="footer">
+    GLEAMI 3.0 Shipping Policy Guide &middot; XPLAT &middot; 2026.04.01
+  </div>
+
+</div>
+</body>
+</html>

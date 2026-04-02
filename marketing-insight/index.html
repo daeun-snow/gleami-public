@@ -1,0 +1,877 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GLEAMI 3.0 — "금이니까" 트리거로의 접근</title>
+<meta name="description" content="유아동복 브랜드의 카테고리 확장 소식에서 시작된 생각이, AI와의 전략 핑퐁을 거쳐 GLEAMI 론칭 마케팅의 방향성이 되기까지.">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: #0a0a0a;
+    color: #e4e4e7;
+    min-height: 100vh;
+    padding: 40px 20px;
+    line-height: 1.7;
+  }
+  .container { max-width: 780px; margin: 0 auto; }
+
+  /* Header */
+  .header {
+    text-align: center;
+    margin-bottom: 56px;
+    padding-top: 20px;
+  }
+  .header .kicker {
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #D4A843;
+    margin-bottom: 16px;
+  }
+  .header h1 {
+    font-size: 34px;
+    font-weight: 700;
+    background: linear-gradient(135deg, #D4A843, #C4963C, #E8C96A);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 16px;
+    line-height: 1.3;
+  }
+  .header .subtitle {
+    color: #a1a1aa;
+    font-size: 15px;
+    line-height: 1.7;
+    max-width: 580px;
+    margin: 0 auto;
+  }
+  .header .date-badge {
+    display: inline-block;
+    margin-top: 16px;
+    padding: 4px 14px;
+    background: rgba(212,168,67,0.15);
+    border: 1px solid rgba(212,168,67,0.3);
+    border-radius: 20px;
+    font-size: 13px;
+    color: #D4A843;
+  }
+
+  /* Section Title */
+  .section-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: #fafafa;
+    margin: 48px 0 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .section-title .icon {
+    width: 32px; height: 32px;
+    background: linear-gradient(135deg, #D4A843, #C4963C);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+
+  /* Cards */
+  .card {
+    background: #18181b;
+    border: 1px solid #27272a;
+    border-radius: 16px;
+    padding: 28px;
+    margin-bottom: 16px;
+  }
+  .card h3 {
+    font-size: 17px;
+    font-weight: 600;
+    color: #fafafa;
+    margin-bottom: 12px;
+  }
+  .card p, .card li {
+    font-size: 14px;
+    color: #a1a1aa;
+    line-height: 1.8;
+  }
+  .card ul {
+    list-style: none;
+    margin-top: 8px;
+  }
+  .card ul li { padding: 3px 0; }
+  .card ul li::before {
+    content: '\2022';
+    margin-right: 8px;
+    color: #D4A843;
+  }
+
+  /* Slack Message */
+  .slack-thread {
+    margin-bottom: 16px;
+  }
+  .slack-msg {
+    background: #18181b;
+    border: 1px solid #27272a;
+    border-radius: 16px;
+    padding: 24px 28px;
+    margin-bottom: 12px;
+    position: relative;
+  }
+  .slack-msg.highlight {
+    border-color: rgba(212,168,67,0.35);
+    box-shadow: 0 0 24px rgba(212,168,67,0.06);
+  }
+  .slack-msg .author {
+    font-size: 14px;
+    font-weight: 700;
+    color: #fafafa;
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .slack-msg .author .role-badge {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 4px;
+    background: rgba(212,168,67,0.15);
+    color: #D4A843;
+  }
+  .slack-msg .author .role-badge.ceo {
+    background: rgba(99,102,241,0.15);
+    color: #a5b4fc;
+  }
+  .slack-msg .timestamp {
+    font-size: 12px;
+    color: #52525b;
+    margin-bottom: 12px;
+  }
+  .slack-msg .body {
+    font-size: 14px;
+    color: #d4d4d8;
+    line-height: 1.8;
+  }
+  .slack-msg .body strong {
+    color: #fafafa;
+  }
+  .slack-msg .body .trigger-word {
+    color: #E8C96A;
+    font-weight: 700;
+  }
+  .slack-msg .section-label {
+    display: inline-block;
+    padding: 3px 10px;
+    background: #27272a;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #a1a1aa;
+    margin: 16px 0 10px;
+  }
+  .slack-msg .section-label.gold {
+    background: rgba(212,168,67,0.15);
+    color: #E8C96A;
+  }
+  .thread-indicator {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 0 4px 16px;
+    margin-bottom: 8px;
+  }
+  .thread-indicator .line {
+    width: 2px;
+    height: 20px;
+    background: #27272a;
+    border-radius: 1px;
+  }
+  .thread-indicator span {
+    font-size: 12px;
+    color: #52525b;
+    font-weight: 500;
+  }
+
+  /* Comparison Table */
+  .compare-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+  @media (max-width: 600px) {
+    .compare-grid { grid-template-columns: 1fr; }
+    .header h1 { font-size: 26px; }
+    .flow-grid { grid-template-columns: 1fr !important; }
+  }
+  .compare-card {
+    background: #18181b;
+    border: 1px solid #27272a;
+    border-radius: 16px;
+    padding: 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  .compare-card.gold {
+    border-color: rgba(212,168,67,0.4);
+    box-shadow: 0 0 20px rgba(212,168,67,0.08);
+  }
+  .compare-card .label {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    margin-bottom: 14px;
+  }
+  .compare-card .label.dim {
+    background: #27272a;
+    color: #a1a1aa;
+  }
+  .compare-card .label.glow {
+    background: rgba(212,168,67,0.2);
+    color: #E8C96A;
+  }
+  .compare-card h3 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #fafafa;
+    margin-bottom: 10px;
+  }
+  .compare-card p {
+    font-size: 14px;
+    color: #a1a1aa;
+    line-height: 1.7;
+  }
+
+  /* Info Table */
+  .info-table {
+    width: 100%;
+    background: #18181b;
+    border: 1px solid #27272a;
+    border-radius: 16px;
+    overflow: hidden;
+    margin-bottom: 20px;
+  }
+  .info-table table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+  }
+  .info-table th {
+    background: #1c1c1f;
+    padding: 12px 16px;
+    text-align: left;
+    font-weight: 600;
+    color: #d4d4d8;
+    border-bottom: 1px solid #27272a;
+  }
+  .info-table td {
+    padding: 12px 16px;
+    border-bottom: 1px solid #1f1f23;
+    color: #a1a1aa;
+    line-height: 1.6;
+  }
+  .info-table tr:last-child td { border-bottom: none; }
+
+  /* Flow Diagram */
+  .flow-grid {
+    display: grid;
+    grid-template-columns: 1fr 40px 1fr 40px 1fr;
+    align-items: center;
+    gap: 0;
+    margin: 20px 0;
+  }
+  .flow-step {
+    background: #18181b;
+    border: 1px solid #27272a;
+    border-radius: 14px;
+    padding: 20px;
+    text-align: center;
+  }
+  .flow-step.active {
+    border-color: rgba(212,168,67,0.4);
+    box-shadow: 0 0 16px rgba(212,168,67,0.08);
+  }
+  .flow-step .step-icon {
+    font-size: 24px;
+    margin-bottom: 8px;
+  }
+  .flow-step .step-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #D4A843;
+    margin-bottom: 4px;
+  }
+  .flow-step .step-desc {
+    font-size: 13px;
+    color: #a1a1aa;
+    line-height: 1.5;
+  }
+  .flow-arrow {
+    text-align: center;
+    color: #3f3f46;
+    font-size: 18px;
+  }
+
+  /* Callout */
+  .callout {
+    background: linear-gradient(135deg, rgba(212,168,67,0.12), rgba(196,150,60,0.06));
+    border: 1px solid rgba(212,168,67,0.3);
+    border-radius: 16px;
+    padding: 24px;
+    margin: 24px 0;
+  }
+  .callout h3 {
+    font-size: 16px;
+    font-weight: 700;
+    color: #E8C96A;
+    margin-bottom: 10px;
+  }
+  .callout p {
+    font-size: 14px;
+    color: #d4d4d8;
+    line-height: 1.8;
+  }
+  .callout.blue {
+    background: linear-gradient(135deg, rgba(99,102,241,0.12), rgba(99,102,241,0.04));
+    border-color: rgba(99,102,241,0.3);
+  }
+  .callout.blue h3 { color: #a5b4fc; }
+
+  /* Quote */
+  .big-quote {
+    text-align: center;
+    padding: 40px 24px;
+    margin: 32px 0;
+  }
+  .big-quote .quote-mark {
+    font-size: 48px;
+    color: #D4A843;
+    opacity: 0.3;
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+  .big-quote blockquote {
+    font-size: 22px;
+    font-weight: 700;
+    color: #fafafa;
+    line-height: 1.5;
+    max-width: 560px;
+    margin: 0 auto;
+  }
+  .big-quote blockquote .trigger-word {
+    color: #E8C96A;
+  }
+  .big-quote .attribution {
+    margin-top: 16px;
+    font-size: 14px;
+    color: #52525b;
+  }
+
+  /* Ping Pong */
+  .pingpong {
+    margin: 20px 0;
+  }
+  .pingpong .turn {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 12px;
+    align-items: flex-start;
+  }
+  .pingpong .turn .avatar {
+    width: 32px; height: 32px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+    flex-shrink: 0;
+    font-weight: 700;
+  }
+  .pingpong .turn .avatar.human {
+    background: linear-gradient(135deg, #D4A843, #C4963C);
+    color: #0a0a0a;
+  }
+  .pingpong .turn .avatar.ai {
+    background: #27272a;
+    color: #a1a1aa;
+  }
+  .pingpong .turn .bubble {
+    background: #18181b;
+    border: 1px solid #27272a;
+    border-radius: 12px;
+    padding: 14px 18px;
+    font-size: 13px;
+    color: #d4d4d8;
+    line-height: 1.7;
+    max-width: 85%;
+  }
+  .pingpong .turn .bubble.gold-border {
+    border-color: rgba(212,168,67,0.3);
+  }
+  .pingpong .turn .bubble strong {
+    color: #fafafa;
+  }
+  .pingpong .turn .bubble .trigger-word {
+    color: #E8C96A;
+    font-weight: 700;
+  }
+  .pingpong .arrow-down {
+    text-align: center;
+    color: #3f3f46;
+    font-size: 14px;
+    padding: 4px 0;
+  }
+
+  /* Insight Box */
+  .insight-box {
+    background: #18181b;
+    border: 1px solid #27272a;
+    border-radius: 16px;
+    padding: 28px;
+    margin: 20px 0;
+  }
+  .insight-box .insight-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+  .insight-box .insight-header .dot {
+    width: 8px; height: 8px;
+    background: #D4A843;
+    border-radius: 50%;
+  }
+  .insight-box .insight-header span {
+    font-size: 13px;
+    font-weight: 600;
+    color: #D4A843;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+  .insight-box h3 {
+    font-size: 17px;
+    font-weight: 600;
+    color: #fafafa;
+    margin-bottom: 12px;
+  }
+  .insight-box p {
+    font-size: 14px;
+    color: #a1a1aa;
+    line-height: 1.8;
+  }
+  .insight-box .highlight-text {
+    color: #E8C96A;
+    font-weight: 600;
+  }
+
+  /* Divider */
+  .divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #27272a, transparent);
+    margin: 48px 0;
+  }
+
+  /* Thanks */
+  .thanks-card {
+    background: linear-gradient(135deg, rgba(212,168,67,0.08), rgba(212,168,67,0.03));
+    border: 1px solid rgba(212,168,67,0.2);
+    border-radius: 16px;
+    padding: 28px;
+    margin: 24px 0;
+    text-align: center;
+  }
+  .thanks-card .emoji { font-size: 28px; margin-bottom: 12px; }
+  .thanks-card h3 {
+    font-size: 16px;
+    font-weight: 700;
+    color: #E8C96A;
+    margin-bottom: 8px;
+  }
+  .thanks-card p {
+    font-size: 14px;
+    color: #d4d4d8;
+    line-height: 1.8;
+  }
+
+  /* Footer */
+  .footer {
+    text-align: center;
+    padding: 40px 0 16px;
+    color: #3f3f46;
+    font-size: 12px;
+    line-height: 1.8;
+  }
+  .footer a {
+    color: #52525b;
+    text-decoration: none;
+  }
+  .footer .powered {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 12px;
+    background: #18181b;
+    border: 1px solid #27272a;
+    border-radius: 8px;
+    font-size: 11px;
+    color: #52525b;
+    margin-top: 8px;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="kicker">GLEAMI 3.0 Launch Strategy</div>
+    <h1>"금이니까" 트리거로의 접근</h1>
+    <p class="subtitle">
+      유아동복 브랜드의 카테고리 확장 소식에서 시작된 생각이,<br>
+      AI와의 전략 핑퐁을 거쳐 론칭 마케팅의 방향성이 되기까지.
+    </p>
+    <span class="date-badge">2026.04.01 &mdash; Goldplat AX Lab</span>
+  </div>
+
+  <!-- ============================================ -->
+  <!-- Part 1: MVP AI 활용 프레임 -->
+  <!-- ============================================ -->
+
+  <div class="section-title">
+    <div class="icon">01</div>
+    <span>MVP 단계에서의 AI 활용 &mdash; 전략과 전술의 분리</span>
+  </div>
+
+  <div class="insight-box">
+    <div class="insight-header">
+      <div class="dot"></div>
+      <span>Key Finding</span>
+    </div>
+    <h3>전략 단에서는 프레임워크를 내려놓는 게 더 좋았다</h3>
+    <p>이 프로젝트에서 AI에게 제품 심리학 프레임워크(B.I.A.S, BMAP 등)를 사전 적용한 대화와, 프레임워크 없이 자유롭게 사고한 대화를 비교했습니다.</p>
+    <p style="margin-top:12px;"><span class="highlight-text">결과: 프레임워크 없이 자유롭게 핑퐁한 대화에서 "고객의 내적 갈등을 해소하는 핵심 트리거를 찾는 과정으로 접근해보자"는 마케팅 방향성이 설정되었습니다.</span></p>
+    <p style="margin-top:8px;">프레임워크를 적용했다면 체크리스트 기반의 빠짐없는 점검은 가능했겠지만, 아베끄몽 &rarr; 퀸잇 &rarr; GLEAMI로 이어지는 비약적 연결은 만들어지지 않았을 가능성이 높습니다.</p>
+  </div>
+
+  <div class="flow-grid">
+    <div class="flow-step active">
+      <div class="step-icon">&#x1f4a1;</div>
+      <div class="step-label">전략 단</div>
+      <div class="step-desc">비정형 인사이트<br>자유로운 AI 핑퐁<br>프레임워크 OFF</div>
+    </div>
+    <div class="flow-arrow">&rarr;</div>
+    <div class="flow-step">
+      <div class="step-icon">&#x1f3af;</div>
+      <div class="step-label">방향성 도출</div>
+      <div class="step-desc">핵심 트리거 접근<br>"금이니까"</div>
+    </div>
+    <div class="flow-arrow">&rarr;</div>
+    <div class="flow-step active">
+      <div class="step-icon">&#x2699;&#xFE0F;</div>
+      <div class="step-label">전술 단</div>
+      <div class="step-desc">프레임워크 ON<br>B.I.A.S / BMAP 등<br>체계적 실행 설계</div>
+    </div>
+  </div>
+
+  <div class="callout">
+    <h3>MVP 단계의 AI 활용 노하우</h3>
+    <p>좋은 AI 스킬이 많고, 적재적소에 잘 써야 좋은 결과가 나옵니다. 하지만 <strong><a href="https://github.com/Goldplat-co/company-context/blob/main/.claude/skills/cso/SKILL.md" style="color:#E8C96A; text-decoration:underline;">전략 에이전트(/cso 스킬)</a>를 쓰는 게 능사가 아닙니다.</strong></p>
+    <p style="margin-top:12px;">MVP 단계에서는 <strong>전략 에이전트(/cso 스킬) 없이 자유롭게 사고한 뒤</strong> &rarr; <strong><a href="https://github.com/Goldplat-co/company-context/blob/main/.claude/skills/cso/SKILL.md" style="color:#E8C96A; text-decoration:underline;">전략 에이전트(/cso 스킬)</a>로 사고를 정리하고</strong> &rarr; <strong>전술 단에서 <a href="https://github.com/Goldplat-co/ax-playbook/tree/main/skills" style="color:#E8C96A; text-decoration:underline;">Product Psychology 스킬</a>을 적용하는 것</strong>이 노하우입니다.</p>
+    <p style="margin-top:16px; margin-bottom:6px; color:#E8C96A; font-weight:700; font-size:13px;">STEP 1. 자유롭게 사고하기</p>
+    <p>Claude와 프레임워크 없이 대화합니다. 그냥 머릿속 생각을 던지고, 반론하고, 질문하고, 비약해봅니다. 이 단계에서 비정형 인사이트가 나옵니다.</p>
+    <p style="margin-top:16px; margin-bottom:6px; color:#E8C96A; font-weight:700; font-size:13px;">STEP 2. 전략 에이전트(/cso 스킬)로 사고 정리하기</p>
+    <p>방향성이 잡히면, 그때 <a href="https://github.com/Goldplat-co/company-context/blob/main/.claude/skills/cso/SKILL.md" style="color:#E8C96A; text-decoration:underline;">전략 에이전트(/cso 스킬)</a>를 켜서 흩어진 생각을 구조화합니다. 팀에 공유할 수 있는 형태로 정리하는 단계입니다.</p>
+    <p style="margin-top:16px; margin-bottom:6px; color:#E8C96A; font-weight:700; font-size:13px;">STEP 3. 전술 단에서 Product Psychology 스킬 적용하기</p>
+    <p>랜딩페이지, 광고 소재, CTA 카피 등을 만들 때 <a href="https://github.com/Goldplat-co/ax-playbook/tree/main/skills" style="color:#E8C96A; text-decoration:underline;">Product Psychology 스킬</a>을 적용합니다. B.I.A.S(심리 필터 점검), BMAP(행동 설계), Peak-End(경험 설계) 등이 자동으로 작동해서 빠짐없이 체크해줍니다.</p>
+  </div>
+
+  <div class="info-table">
+    <table>
+      <thead>
+        <tr>
+          <th></th>
+          <th>STEP 1-2 (전략 단)</th>
+          <th>STEP 3 (전술 단)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="color:#d4d4d8; font-weight:600;">AI 활용법</td>
+          <td>제약 없는 자유 대화<br>&rarr; 전략 에이전트(/cso)로 정리</td>
+          <td>Product Psychology 스킬<br>체크리스트 &middot; A/B 설계</td>
+        </tr>
+        <tr>
+          <td style="color:#d4d4d8; font-weight:600;">목적</td>
+          <td>비정형 인사이트 발견<br>+ 구조화</td>
+          <td>빠짐없는 실행 설계</td>
+        </tr>
+        <tr>
+          <td style="color:#d4d4d8; font-weight:600;">이번 사례</td>
+          <td style="color:#E8C96A;">"금이니까" 방향성 설정</td>
+          <td>메시지 A/B, 큐레이션 구조, 퍼널 설계</td>
+        </tr>
+        <tr>
+          <td style="color:#d4d4d8; font-weight:600;">스킬</td>
+          <td>OFF &rarr; 전략 에이전트(/cso)</td>
+          <td style="color:#E8C96A;">Product Psychology<br>(B.I.A.S / BMAP / Peak-End)</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p style="font-size:13px; color:#52525b; margin-top:12px; line-height:1.7; text-align:center;">
+    핵심: 좋은 스킬을 처음부터 켜는 게 아니라, <strong style="color:#a1a1aa;">자유 사고 &rarr; 구조화 &rarr; 스킬 적용</strong> 순서로 쓰는 것이 노하우입니다.
+  </p>
+
+  <p style="font-size:14px; color:#71717a; margin-top:24px; line-height:1.7;">
+    아래는 이 접근법의 실제 사례입니다.
+  </p>
+
+  <div class="divider"></div>
+
+  <!-- ============================================ -->
+  <!-- Part 2: AI 전략 핑퐁 -->
+  <!-- ============================================ -->
+
+  <div class="section-title">
+    <div class="icon">02</div>
+    <span>AI 전략 핑퐁 &mdash; 방향성이 만들어진 과정</span>
+  </div>
+
+  <p style="font-size:14px; color:#71717a; margin-bottom:24px; line-height:1.7;">
+    다은은 AI(Claude)와 자유로운 전략 핑퐁을 거쳤습니다.<br>
+    프레임워크 없이, 반론과 질문을 주고받으며 방향성을 좁혀간 핵심 흐름입니다.
+  </p>
+
+  <div class="pingpong">
+
+    <div class="turn">
+      <div class="avatar human">다은</div>
+      <div class="bubble gold-border">머리속에 스쳐가는 생각이 있어. 아베끄몽이 유아동복에서 유아동 화장품으로 확장한다는데, <strong>카테고리가 아니라 고객 설득 구조로 확장하는 것 아닐까?</strong></div>
+    </div>
+    <div class="arrow-down">&darr;</div>
+
+    <div class="turn">
+      <div class="avatar ai">AI</div>
+      <div class="bubble">날카로운 관찰. 글리미에 적용하면 &mdash; 글리미 고객의 공통점은 <strong>"소비에 대한 합리적 명분이 필요한 사람."</strong> "금"이 그 합리화의 장치.</div>
+    </div>
+    <div class="arrow-down">&darr;</div>
+
+    <div class="turn">
+      <div class="avatar human">다은</div>
+      <div class="bubble gold-border">"명분"이 모호해. 예쁘니까가 명분이 되는 경우는? 모든 브랜드가 명분 아닌가?</div>
+    </div>
+    <div class="arrow-down">&darr;</div>
+
+    <div class="turn">
+      <div class="avatar ai">AI</div>
+      <div class="bubble">맞아요. "명분"은 모든 브랜드가 해요. 다은님이 발견한 건 명분이 아니라 <strong>고객 내면의 특정한 갈등을 해소하는 능력</strong>이었어요.</div>
+    </div>
+    <div class="arrow-down">&darr;</div>
+
+    <div class="turn">
+      <div class="avatar human">다은</div>
+      <div class="bubble gold-border">심리 구조보다 결국 <strong>내적 갈등을 해소하는 트리거</strong>가 뭐냐가 더 핵심 아닌가?</div>
+    </div>
+    <div class="arrow-down">&darr;</div>
+
+    <div class="turn">
+      <div class="avatar ai">AI</div>
+      <div class="bubble">맞아요. 아베끄몽: <span class="trigger-word">"내 아이니까"</span> / 퀸잇: <span class="trigger-word">"4050인 내가 주인공"</span> / 글리미: <span class="trigger-word">"금이니까"</span></div>
+    </div>
+    <div class="arrow-down">&darr;</div>
+
+    <div class="turn">
+      <div class="avatar human">다은</div>
+      <div class="bubble gold-border">근데 내부에서 금 고객 &ne; 주얼리 고객이라는 체감이 있어. "골드바 고객이 주얼리도 살까?"가 약한 전략 같은데.</div>
+    </div>
+    <div class="arrow-down">&darr;</div>
+
+    <div class="turn">
+      <div class="avatar ai">AI</div>
+      <div class="bubble"><strong>같은 사람이 아니어도, 같은 트리거가 작동하느냐</strong>가 진짜 질문이에요. 아베끄몽도 옷 사는 엄마 &ne; 화장품 사는 엄마일 수 있지만, <span class="trigger-word">"내 아이니까"</span>는 둘 다 작동하잖아요.</div>
+    </div>
+  </div>
+
+  <div class="big-quote">
+    <div class="quote-mark">&ldquo;</div>
+    <blockquote>
+      <span class="trigger-word">"금이니까"</span>가 주얼리에서도<br>
+      고객의 내적 갈등을 녹이는<br>
+      트리거로 작동하는가?
+    </blockquote>
+    <div class="attribution">&mdash; GLEAMI 3.0 론칭 마케팅에서 검증할 핵심 가설</div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ============================================ -->
+  <!-- Part 3: 갈등 해소 트리거 비교 -->
+  <!-- ============================================ -->
+
+  <div class="section-title">
+    <div class="icon">03</div>
+    <span>내적 갈등 해소 트리거 &mdash; 브랜드 비교</span>
+  </div>
+
+  <div class="info-table">
+    <table>
+      <thead>
+        <tr>
+          <th style="width:18%;">브랜드</th>
+          <th style="width:35%;">고객 내적 갈등</th>
+          <th style="width:22%;">해소 트리거</th>
+          <th>확장 방향</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="color:#fafafa; font-weight:600;">아베끄몽</td>
+          <td>돈 쓰는데 내가 쓰는 게 아님</td>
+          <td style="color:#E8C96A; font-weight:600;">"내 아이니까"</td>
+          <td>유아동복 &rarr; 유아동 화장품</td>
+        </tr>
+        <tr>
+          <td style="color:#fafafa; font-weight:600;">퀸잇</td>
+          <td>이 나이에 이런 거 사도 되나</td>
+          <td style="color:#E8C96A; font-weight:600;">"4050인 내가 주인공"</td>
+          <td>패션 &rarr; F&B(팔도감)</td>
+        </tr>
+        <tr>
+          <td style="color:#fafafa; font-weight:600;">GLEAMI</td>
+          <td>사고 싶다 vs 이 돈 써도 되나</td>
+          <td style="color:#E8C96A; font-weight:600;">"금이니까"</td>
+          <td>골드바 &rarr; 주얼리 (검증 예정)</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="compare-grid">
+    <div class="compare-card">
+      <div class="label dim">일반 브랜드</div>
+      <h3>"사야 할 이유"를 줌</h3>
+      <p>고객 심리: "이게 좋구나" &rarr; 구매<br>확장: 같은 카테고리 내에서</p>
+    </div>
+    <div class="compare-card gold">
+      <div class="label glow">트리거 기반 브랜드</div>
+      <h3>"내적 갈등을 녹이는 장치"를 가짐</h3>
+      <p>고객 심리: "사고 싶다 vs 안 되는데" &rarr; 트리거 &rarr; 구매<br>확장: 같은 내적 갈등 구조가 있는 곳이면 어디든</p>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ============================================ -->
+  <!-- Part 4: 원문 Slack Thread -->
+  <!-- ============================================ -->
+
+  <div class="section-title">
+    <div class="icon">04</div>
+    <span>Team Slack &mdash; 팀에 공유된 전략 논의 원문</span>
+  </div>
+
+  <p style="font-size:14px; color:#71717a; margin-bottom:24px; line-height:1.7;">
+    위 과정을 거쳐 팀에 실제로 공유된 Slack 메시지입니다.
+  </p>
+
+  <div class="slack-thread">
+
+    <!-- Main Message -->
+    <div class="slack-msg highlight">
+      <div class="author">정다은 <span class="role-badge">Brand Lead</span></div>
+      <div class="timestamp">2026.04.01</div>
+      <div class="body">
+        <p>내일 GLEAMI 3.0 론칭 마케팅 관련해서 짧게 팀 의견을 듣고 싶습니다.</p>
+        <p style="margin-top:8px;">저는 이번 마케팅을 단순히 프로모션이나 광고 기획의 문제로 보기보다, <strong>GLEAMI 고객의 내적 갈등을 해소하는 핵심 트리거를 찾는 과정</strong>으로 접근해보면 좋겠다고 생각했습니다.</p>
+        <p style="margin-top:8px;">이 방향성 자체가 맞을지, 그리고 실제 전략 논의도 이 관점에서 풀어갈 수 있을지 내일 공동구매 마무리 후 오후에 팀 회의를 통해 함께 이야기 나눠보면 좋겠습니다.</p>
+
+        <!-- 아베끄몽 -->
+        <div class="section-label">아베끄몽 해석</div>
+        <p><strong>유아동복 고객의 내적 갈등 구조</strong></p>
+        <p>구매자 &ne; 사용자</p>
+        <p>엄마의 내적 갈등: <em>"내 것은 아깝다"</em> vs <em>"아이에게는 좋은 걸 써야 한다"</em></p>
+        <p>해소 트리거: <span class="trigger-word">"내 아이니까"</span></p>
+        <p style="margin-top:10px;">유아동 화장품 고객의 내적 갈등 해결 구조 검증 &mdash; 카테고리는 달라졌지만 작동하는 설득 구조는 동일할 가능성. 즉, <strong>확장의 본질은 카테고리 확장보다 동일한 내적 갈등 해소 구조의 검증.</strong></p>
+        <p style="margin-top:10px;">아베끄몽</p>
+        <p>유아동복 = 설득 구조 확립</p>
+        <p>유아동 화장품 = 설득 구조 검증</p>
+        <p>이후 = 동일 구조가 적용되는 영역으로 확장 가능</p>
+
+        <!-- 라포랩스 -->
+        <div class="section-label">라포랩스 해석</div>
+        <p><strong>고객의 설득 구조로 정체성 정의 / 사업 확장</strong></p>
+        <p>퀸잇(라포랩스): 단순 패션 커머스가 아니라 <strong>4050을 가장 잘 아는 커머스</strong>라는 포지션 확보</p>
+        <p>팔도감(라포랩스): 그 전문성이 F&B에서도 작동하는지 검증하는 확장</p>
+        <p>라포랩스: 결국 <strong>4050 타겟의 다양한 도메인으로 사업 확장 가능</strong></p>
+
+        <!-- GLEAMI -->
+        <div class="section-label gold">GLEAMI에 대한 문제의식</div>
+        <p><strong>우리는 지금 주얼리/금이라는 카테고리를 파는 커머스인가?<br>아니면 특정한 내적 갈등을 해소하는 설득 구조를 가진 커머스인가?</strong></p>
+        <p style="margin-top:8px;">찾아야 하는 것: 금/주얼리를 사는 고객의 내적 갈등, 그 갈등을 푸는 핵심 트리거 1개 &mdash; <span class="trigger-word">"금이니까"</span></p>
+        <p style="margin-top:8px;">이번 론칭의 의미: 단순 판매 시작이 아니라, <strong>내적 갈등 해소 트리거의 첫 검증 실험</strong></p>
+        <div class="section-label gold">더 큰 그림</div>
+        <p>만약 이 트리거가 검증되면 GLEAMI 마케팅 메시지 정리</p>
+        <p><strong>골드플랫의 향후 사업 확장 방향 정리까지 연결될 수 있지 않을까?</strong></p>
+      </div>
+    </div>
+
+    <!-- Thread -->
+    <div class="thread-indicator">
+      <div class="line"></div>
+      <span>Thread &mdash; 생각의 과정</span>
+    </div>
+
+    <div class="slack-msg">
+      <div class="author">정다은 <span class="role-badge">Brand Lead</span></div>
+      <div class="timestamp">오후 10:15</div>
+      <div class="body">
+        <p>아베끄몽이 골드플랫에 갑자기 왜 등장했지? 싶으실텐데요..</p>
+        <p style="margin-top:8px;">어제 저녁 먹다가 유아동 화장품 할 수도 있다는 이야기를 주워 듣고 <em>왜 같은 옷이 아니라 어려운 유아동 화장품일까~?</em> 생각하며 추론의 나래를 펼쳐보았습니다.</p>
+        <p style="margin-top:12px;">도메인 전문성을 가져가려고 했으면 같은 의류로 카테고리를 확장했을 것 같고, 돈만 많이 벌고자 했으면 브랜드 이름과 타겟을 달리해서 그냥 화장품을 팔았을 것 같았어요.</p>
+        <p style="margin-top:8px;">'유아동' 화장품은 화장품 업계에서도 매우 까다로운 영역인데요. 유아동은 대표적으로 구매자와 제품 사용자가 다른 타겟이에요. 엄마가 구매해서 아이가 입습니다.</p>
+        <p style="margin-top:8px;">엄마가 돈을 쓰고 싶은데 <em>'내껀 아까워도'</em> <em>'내 아이에겐 좋은 걸 사줘야하니까'</em>라는 합리화가 작동해야 합니다. 유아동 화장품도 이런 방법으로 고객을 설득하는 카테고리라는 생각이 들었어요.</p>
+        <p style="margin-top:12px;">어쩌면, <strong>'아베끄몽'은 구매자와 사용자가 다른 피상적인 이중성을 가진 고객을 전문적으로 설득할 수 있는 브랜드가 되지 않을까?</strong> 라는 결론에 도달했습니다.</p>
+        <p style="margin-top:8px;">예를 들면, 퀸잇이 카테고리 관점에서 보면 그냥 패션 커머스이지만, 그들은 스스로를 4050을 가장 잘 아는 커머스라고 정의했기 때문에 4050이 관심 가질만한 F&B 커머스인 '팔도감'으로 확장했던 것 처럼요.</p>
+      </div>
+    </div>
+
+    <div class="slack-msg">
+      <div class="author">이진영 <span class="role-badge ceo">CEO</span></div>
+      <div class="timestamp">오후 10:36</div>
+      <div class="body">
+        <p>다은님 너무 좋습니다. 너무나 좋은 접근 사고 과정인것 같습니다.</p>
+        <p style="margin-top:8px;">말씀하신대로 고객의 Pain point를 해결하는게 기업의 최상위 방향성이자 목표가 되면서 카테고리 및 산업은 그 하위단계가 되고, 우리가 정의한 타겟 고객들의 Pain Point중 하나라도 해결해준 가치를 발견했다면 &mdash; <strong>"다른 카테고리 또는 산업에도 동일한 방정식이 작동할 것이다"</strong>라는 대 가설 기반으로 움직이는게 초기 PMF에 성공해서 확장 및 스케일업 단계 기업들의 성공방정식인것 같습니다.</p>
+        <p style="margin-top:12px;">다은님 말처럼 결국 우리는 Gleami에서 <strong>첫 PMF, 고객의 Pain point를 해결해 주는 VP(Value Proposition)을 찾거나 발견, 검증하는게 당면한 과제</strong>입니다.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ============================================ -->
+  <!-- Thanks -->
+  <!-- ============================================ -->
+
+  <div class="thanks-card">
+    <div class="emoji">&#x1F49B;</div>
+    <h3>아베끄몽 팀에게</h3>
+    <p>가벼운 스몰톡이었지만 제게 큰 소스가 된 말을 주셔서 감사합니다.<br>
+    그 한 마디가 "왜 같은 옷이 아니라 화장품이지?"라는 질문을 만들었고,<br>
+    그 질문이 방향성을 푸는 실마리가 되었습니다.<br><br>
+    앞으로도 자주 스몰톡 부탁드려요..&#x1F49B;</p>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- Footer -->
+  <div class="footer">
+    GLEAMI 3.0 &mdash; Goldplat Co.<br>
+    <span class="powered">Powered by Claude &times; Human Strategic Thinking</span>
+  </div>
+
+</div>
+</body>
+</html>
